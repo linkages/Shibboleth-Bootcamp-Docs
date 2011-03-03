@@ -1,0 +1,319 @@
+% setup
+\documentclass[hyperref={colorlinks=true},professionalfonts]{beamer}
+% \usepackage[latin1]{inputenc}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% any shorthands
+\newcommand{\us}[1]{ \_#1\_ } % we do so many underscored identifiers
+\newcommand{\email}[1]{\href{mailto:#1}{#1}}
+
+% presentation configuration
+\usetheme{Warsaw}
+
+\title[Advanced Shibboleth Bootcamp]{Advanced Shibboleth topics}
+\institute{University of Florida}
+\author{UF IT/CNS/Open Systems Group}
+
+\date{\today}
+
+% document
+\begin{document}
+
+\begin{frame}
+\titlepage
+
+\center{
+Eli Ben-Shoshan (\email{ebs@ufl.edu}) \\ 
+Martin Smith (\email{smithmb@ufl.edu}) \\
+Laura Guazzelli (\email{laura2@ufl.edu}) \\
+}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Important references}
+\begin{itemize}
+  \item UF IT - Shibboleth \\ \url{http://www.it.ufl.edu/identity/shibboleth}
+  \item CNS/Open Systems Group - Shibboleth \\ \url{http://open-systems.ufl.edu/shibboleth}
+  \item Internet2 - Shibboleth \\ \url{https://spaces.internet2.edu/display/SHIB2/Home}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Goals}
+
+What you should know by the end:
+\begin{itemize}
+\item How to install SP software
+\item General understanding about Shibboleth
+\item How to configure SP software
+\end{itemize}
+
+\bigskip
+
+What you should have done by the end
+\begin{itemize}
+\item Installed your SP
+\item Learned how to protect your content
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Requirements}
+
+You should have the following ready for this class:
+\begin{itemize}
+\item A test/dev machine at your office
+\item Access to your test/dev machine
+\item Capability to install software on test/dev machine
+\item Willingness to have your test/dev machine go down for a bit
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Definitions}
+\begin{itemize} 
+\item Shibboleth Service Provider (SP) \\ You and the SP software that you install and maintain on your webserver.
+\item Shibboleth Identity Provider ( IdP ) \\ The central authentication server. The IdP authenticates the user and vends attributes about the user.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Definitions (continued)}
+\begin{itemize}
+\item Security Assertion Markup Language (SAML) \\ An XML standard for exchanging authentication and authorization data.
+\item Service Endpoint \\ A set of URLs on the SP and IdP that are used to transfer SAML documents.
+\item Metadata \\ A document that names all of the service endpoints.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Definitions (continued)}
+\begin{itemize}
+\item Entity Identifier (entityID) \\ A universal resource name (URN) that identifies your SP
+\item All entityID's for UF take the following form: \begin{itemize}
+\item \texttt{urn:edu:ufl:prod:XXXXX} for production
+\item \texttt{urn:edu:ufl:test:XXXXX} for test
+\item \texttt{urn:edu:ufl:dev:XXXXX} for development
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Shibboleth software on your SP}
+The Shibboleth software that runs on your SP is setup as follows:
+\begin{itemize}
+\item \textbf{Shibboleth module} that runs in your webserver (IIS/Apache) that maps URIs to requests and talks to Shibboleth daemon
+\item \textbf{Shibboleth daemon} that does all the heavy lifting, decrypts SAML, extracts attributes
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Software Install}
+Official directions are here: \\
+{\small \url{http://www.it.ufl.edu/identity/shibboleth/technical.html}}
+
+\bigskip
+The directions are similar between Windows/IIS and Unix/Apache.
+\end{frame}
+
+\begin{frame}
+\frametitle{Install the software - Windows}
+{\tiny See \url{http://www.it.ufl.edu/identity/shibboleth/technicalIIS.html}.}
+
+\begin{itemize}
+\item Download the latest MSI installer from this page for your platform and install it, then reboot
+\item Please do not change any defaults offered by the installer unless absolutely necessary
+\item Verify that the installer correctly created an ISAPI filter on your site and configured the Shibboleth daemon as a Windows service
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Install the software – RHEL}
+{\tiny See \url{http://www.it.ufl.edu/identity/shibboleth/technicalapache.html}.}
+
+\begin{itemize}
+\item Download and install the RPMs from this page for your platform
+\item Edit Apache config to load the shibboleth module and set UseCanonicalName
+\item Restart Apache and start the Shibboleth daemon
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configuring Shibboleth Daemon}
+All configuration for daemon is in the \texttt{shibboleth2.xml} file. Get the template from the Open Systems site:
+\url{http://open-systems.ufl.edu/shibboleth}
+\bigskip
+
+Place the file in the correct location: \\ \bigskip
+\textbf{Windows} - \begin{verbatim} C:\opt\shibbolethsp\etc\shibboleth\shibboleth2.xml \end{verbatim}
+\textbf{Unix} - \begin{verbatim} /etc/shibboleth/shibboleth2.xml \end{verbatim}
+\end{frame}
+
+\begin{frame}
+\frametitle{Configuring Shibboleth Daemon (continued)}
+\textbf{Update shibboleth2.xml} template, replacing variables: \\
+\begin{itemize}
+\item \us{HOSTNAME} - fully qualified domain of your site 
+\item \us{URN} - entityID assigned to you by Bridges IAM Admin
+\end{itemize}
+For Windows you also have
+\begin{itemize}
+\item \us{SITEID} - IIS "Site Identifier" for this website
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configuring Shibboleth Daemon (continued)}
+\textbf{Remove} the sp-cert.pem and sp-key.pem from the Shibboleth configuration directory for your platform \\ \bigskip
+\textbf{Windows} - \begin{verbatim} C:\opt\shibbolethsp\etc\shibboleth \end{verbatim}
+\textbf{Unix} - \begin{verbatim} /etc/shibboleth \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Configure Shibboleth Daemon (continued)}
+\textbf{Generate} the key and certificate: \\ \bigskip
+\textbf{Windows} - \texttt{keygen.bat -h \us{HOSTNAME} -e \us{URN}} \\
+\bigskip
+\textbf{Unix} - \texttt{keygen.sh -h \us{HOSTNAME} -e \us{URN}} \\
+\end{frame}
+
+\begin{frame}
+\frametitle{Configure Shibboleth Daemon}
+\textbf{Rename} the generated files: \\ \bigskip
+\texttt{sp-cert.pem} should be renamed to \texttt{\us{HOSTNAME}.cert} \\
+\bigskip
+\texttt{sp-key.pem} should be renamed to \texttt{\us{HOSTNAME}.key} \\
+\bigskip
+Now, \textbf{restart} the shibboleth daemon.
+\end{frame}
+
+\begin{frame}
+\frametitle{Checking your install}
+\textbf{If all went well}, then you should have a shibboleth daemon running 
+and the webserver should respond with your SP's metadata at this URL: \\ \bigskip
+\textbf{\texttt{http://\us{HOSTNAME}/Shibboleth.sso/Metadata}}
+\end{frame}
+
+\begin{frame}
+\frametitle{Check your install}
+\textbf{Review} your metadata:
+\begin{itemize}
+\item Make sure the \textbf{entityID is correct} for this SP
+\item Make sure there is \textbf{at least one} of these services defined:
+\begin{itemize}
+\item AssertionConsumerService
+\item ManageNameIDService
+\item SingleLogoutService
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Service provider completed}
+{\large \textbf{Congratulations!} Your SP is now configured.} \\
+\bigskip
+\textbf{Submit your Metadata} for inclusion in the IdP using \url{https://open-systems.ufl.edu/shibmeta}.
+
+\bigskip \bigskip
+\textbf{Until this happens} your will get an error message on your SP: \\ \bigskip
+\textit{Error Message: SAML 2 SSO profile is not configured for relying party urn:edu:ufl:XXXX:YYYYY}
+\end{frame}
+
+\begin{frame}
+\frametitle{Protecting Content}
+Two ways to accomplish content protection:
+\begin{itemize}
+\item Modify shibboleth2.xml
+\item Modify .htaccess (Apache only)
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Protecting Content (shibboleth2.xml)}
+This can be used for both IIS and Apache, but this is \textbf{the only way to protect content in IIS}.
+\begin{itemize}
+\item Add a \texttt{Path} element to the \texttt{Host} element 
+\item Add a \texttt{AccessControl} element to \texttt{Path} element
+\item Add a \texttt{Rule} element to the \texttt{AccessControl} element
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Protecting Content, Simple (shibboleth2.xml)}
+\begin{lstlisting}[language=XML,basicstyle=\ttfamily \small]
+<RequestMapper>
+<RequestMap>
+<Host name="example.com">
+<Path name="secure" 
+   requireSession="true" authType="shibboleth">
+<AccessControl>
+<Rule require="primary-affiliation">S</Rule>
+</AccessControl>
+</Path>
+</Host>
+</RequestMap>
+</RequestMapper>
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Protecting Content, Complex (shibboleth2.xml)}
+\begin{lstlisting}[language=XML,basicstyle=\ttfamily \small]
+<RequestMapper>
+<RequestMap>
+<Host name="example.com" 
+   requireSession="true" authType="shibboleth">
+<Path name="secure">
+<AccessControl>
+<OR>
+<Rule require="primary-affiliation">S</Rule>
+<Rule require="primary-affiliation">F</Rule>
+</OR>
+</AccessControl>
+</Path>
+</Host>
+</RequestMap>
+</RequestMapper>
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Protecting Content (.htaccess)}
+Much easier to use and maintain. \\ \bigskip
+If you are using Apache, use this method.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Protecting Content (.htaccess)}
+\center{Simple Example} \\
+\begin{lstlisting}[language=XML,basicstyle=\ttfamily \small]
+AuthType Shibboleth
+ShibRequireSession On
+Require valid-user
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Protecting Content (.htaccess)}
+\center{Complex Example} \\
+\begin{lstlisting}[language=XML,basicstyle=\ttfamily \small]
+AuthType Shibboleth
+ShibRequireSession On
+Require primary-affliation ~ S|F
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{Questions?}
+\center{Thank you.}
+\end{frame}
+
+\end{document}
