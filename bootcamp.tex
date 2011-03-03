@@ -1,0 +1,430 @@
+Shibboleth Bootcamp
+Eli Ben-Shoshan - ebs@ufl.edu
+Martin Smith - smithmb@ufl.edu
+Laura Guazzelli - laura2@ufl.edu
+https://spaces.internet2.edu/display/SHIB2/Home
+
+http://open-systems.ufl.edu/shibboleth
+http://www.it.ufl.edu/identity/shibboleth
+
+Goals
+●
+
+What you should know by the end
+–
+–
+
+How to install SP software
+
+–
+●
+
+General understanding about Shibboleth
+How to configure SP software
+
+What you should have done by the end
+–
+
+Installed your SP
+
+–
+
+Learned how to protect your content
+
+Requirements
+●
+
+You should have the following ready for
+this class:
+–
+
+A test/dev machine at your office
+
+–
+
+Access to your test/dev machine
+
+–
+
+Capability to install software on test/dev
+machine
+
+–
+
+Willingness to have your test/dev machine
+go down for a bit
+
+Definitions
+●
+
+Shibboleth Service Provider ( SP )
+–
+
+●
+
+That's you. Its the application that you run
+on your webserver
+
+Shibboleth Identity Provider ( IdP )
+–
+
+The central authentication server. This is
+what authenticates the user and vends
+attributes about the user
+
+Definitions (continued)
+●
+
+Security Assertion Markup Language
+(SAML)
+–
+
+●
+
+Service Endpoint
+–
+
+●
+
+An XML standard for exchanging
+authentication and authorization data
+A set of URLs on the SP and IdP that are
+used to transfer SAML documents
+
+Metadata
+–
+
+A document that names all the Service
+Endpoints
+
+Definitions ( continued )
+●
+
+Entity Identifier ( entityID )
+–
+
+A universal resource name ( urn ) that
+identifies your SP
+
+–
+
+All entityID's for UF take the following form:
+●
+●
+●
+
+urn:edu:ufl:prod:XXXXX for production
+urn:edu:ufl:test:XXXXX for test
+urn:edu:ufl:dev:XXXXX for dev
+
+Shibboleth software on your SP
+●
+
+The Shibboleth software that runs on your
+SP is setup as follows:
+–
+
+Shibboleth module that runs in your
+webserver ( IIS/Apache ) that maps URIs
+to shibboleth requests
+●
+
+–
+
+Talks to Shibboleth daemon
+
+Shibboleth daemon that does all the heavy
+lifting
+●
+●
+
+Decrypts SAML
+Extracts attributes
+
+Software Install
+●
+
+Official directions are here:
+–
+
+●
+
+http://www.it.ufl.edu/identity/shibboleth/technical.html
+
+The directions are similar between
+Windows/IIS and Unix/Apache
+
+Install the software - Windows
+●
+
+●
+
+●
+
+●
+
+http://www.it.ufl.edu/identity/shibboleth/technicalIIS.html
+
+Download the latest MSI installer from this
+page for your platform and install it
+followed be a reboot
+Please do not change any defaults offered
+by the installer unless absolutely
+necessary
+Verify that the installer setup the ISAPI filter
+and setup the Shibboleth daemon
+
+Install the software – RHEL
+●
+
+●
+
+●
+
+●
+
+http://www.it.ufl.edu/identity/shibboleth/technicalapache.html
+
+Download and install the RPMs from this
+page for your platform
+Edit Apache config to load the shibboleth
+module and set UseCanonicalName
+Restart Apache and start the Shibboleth
+daemon
+
+Configuring Shibboleth Daemon
+●
+
+●
+
+All configuration for shibboleth daemon is
+in the shibboleth2.xml file
+Get the template shibboleth2.xml file from
+the open-systems website:
+–
+
+●
+
+http://open-systems.ufl.edu/shibboleth
+
+Place the file in the correct location:
+–
+
+Windows – C:\opt\shibbolethsp\etc\shibboleth/shibboleth2.xml
+
+–
+
+Unix - /etc/shibboleth/shibboleth2.xml
+
+Configuring Shibboleth Daemon –
+Update shibboleth2.xml template
+●
+
+Replace variables in the shibboleth2.xml
+file
+–
+
+–
+
+●
+
+_HOSTNAME_ : fully qualified domain of
+your site
+_URN_ : entityID assigned to you by
+Bridges IAM Admin
+
+For Windows you also have
+–
+
+_SITEID_ : IIS “Site Identifier” for this
+website
+
+Configuring Shibboleth Daemon –
+Generate key and certificate
+●
+
+Remove the sp-cert.pem and sp-key.pem
+from the Shibboleth configuration
+directory for your platform
+–
+
+Windows – c:\opt\shibbolethsp\etc\shibboleth
+
+–
+
+Unix - /etc/shibboleth
+
+Configure Shibboleth Daemon –
+Generate key and certificate
+●
+
+Generate the key and certificate
+–
+
+Windows - keygen.bat -h _HOSTNAME_ -e _URN_
+
+–
+
+Unix - keygen.sh -h _HOSTNAME_ -e _URN_
+
+Configure Shibboleth DaemonGenerate key and certificate
+●
+
+Rename the generated files
+–
+
+–
+
+●
+
+sp-cert.pem should be renamed to
+_HOSTNAME_.cert
+sp-key.pem should be renamed to
+_HOSTNAME_.key
+
+Restart the shibboleth daemon
+
+Check your install
+●
+
+If all went well, then you should have a
+shibboleth daemon running and the
+webserver should respond with your
+SP's metadata at this URL
+–
+
+http://_HOSTNAME_/Shibboleth.sso/Metadata
+
+Check your install – Review your
+metadata
+●
+●
+
+●
+
+Take a look at your metadata
+Make sure the entityID is correct for this
+SP
+Make sure there is at least one of the
+following services defined
+–
+
+AssertionConsumerService
+
+–
+
+ManageNameIDService
+
+–
+
+SingleLogoutService
+
+Congratulations!
+●
+●
+
+●
+
+Your SP is now configured
+Submit your Metadata for inclusion in the
+IdP using https://opensystems.ufl.edu/shibmeta
+Until this happens your will get an error
+message on your SP:
+–
+
+Error Message: SAML 2 SSO profile is not
+configured for relying party
+urn:edu:ufl:XXXX:YYYYY
+
+Protecting Content
+●
+
+Two ways to accomplish content
+protection
+–
+
+Modify shibboleth2.xml
+
+–
+
+Modify .htaccess ( can only be done on
+Apache )
+
+Protecting Content
+( shibboleth2.xml )
+●
+●
+
+●
+
+●
+
+●
+
+This can be used for both IIS and Apache
+This is the only way to protect content in
+IIS
+Add a <Path> element to the <Host>
+element
+Add a <AccessControl> element to <Path>
+element
+Add a <Rule> element to the
+<AccessControl> element
+
+Protecting Content
+( shibboleth2.xml)
+Simple example
+<RequestMapper>
+<RequestMap>
+<Host name=”example.com”>
+<Path name=”secure” requireSession=”true” authType=”shibboleth”>
+<AccessControl>
+<Rule require=”primary-affiliation” >S</Rule>
+</AccessControl>
+</Path>
+</Host>
+</RequestMap>
+</RequestMapper>
+
+Protecting Content
+( shibboleth2.xml)
+Complex example
+<RequestMapper>
+<RequestMap>
+<Host name=”example.com” requireSession=”true” authType=”shibboleth”>
+<Path name=”secure”>
+<AccessControl>
+<OR>
+<Rule require=”primary-affiliation” >S</Rule>
+<Rule require=”primary-affiliation”>F</Rule>
+</OR>
+</AccessControl>
+</Path>
+</Host>
+</RequestMap>
+</RequestMapper>
+
+Protecting Content ( .htaccess )
+●
+
+Much easier to use and maintain
+
+●
+
+If you are using Apache, use this method
+
+Protecting Content ( .htaccess )
+Simple Example
+AuthType Shibboleth
+ShibRequireSession On
+Require valid-user
+
+Protecting Content ( .htaccess )
+Complex Example
+AuthType Shibboleth
+ShibRequireSession On
+Require primary-affliation ~ S|F
+
+Questions?
+
+
