@@ -6,7 +6,7 @@
 *.idx
 *.lof
 *.log
-*.pdf
+*.vrb
 *.toc
 *.nav
 *.out
