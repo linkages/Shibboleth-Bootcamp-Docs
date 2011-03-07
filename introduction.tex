@@ -1,45 +1,5 @@
-% setup
-\documentclass[hyperref={colorlinks=true},professionalfonts]{beamer}
-% \usepackage[latin1]{inputenc}
-\usepackage{listings}
-\usepackage{hyperref}
 
-% any shorthands
-\newcommand{\us}[1]{ \_#1\_ } % we do so many underscored identifiers
-\newcommand{\email}[1]{\href{mailto:#1}{#1}}
-
-% presentation configuration
-\usetheme{Warsaw}
-\usecolortheme{crane}
-
-\title[Shibboleth Bootcamp]{An Introduction to Shibboleth}
-\institute{University of Florida}
-\author{UF IT/CNS/Open Systems Group}
-
-\date{\today}
-
-% document
-\begin{document}
-
-\begin{frame}
-\titlepage
-
-\center{
-Eli Ben-Shoshan (\email{ebs@ufl.edu}) \\ 
-Martin Smith (\email{smithmb@ufl.edu}) \\
-Laura Guazzelli (\email{laura2@ufl.edu}) \\
-}
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Important references}
-\begin{itemize}
-  \item UF IT - Shibboleth \\ \url{http://www.it.ufl.edu/identity/shibboleth}
-  \item CNS/Open Systems Group - Shibboleth \\ \url{http://open-systems.ufl.edu/shibboleth}
-  \item Internet2 - Shibboleth \\ \url{https://spaces.internet2.edu/display/SHIB2/Home}
-\end{itemize}
-\end{frame}
+\input{include.tex}
 
 \begin{frame}
 \frametitle{Goals}
@@ -116,6 +76,10 @@ The Shibboleth software that runs on your SP is setup as follows:
 \frametitle{Software Install}
 Official directions are here: \\
 {\small \url{http://www.it.ufl.edu/identity/shibboleth/technical.html}}
+
+\bigskip
+Some repos for popular distros exist: \\
+{\small \url{https://spaces.internet2.edu/display/SHIB2/NativeSPLinuxRPMInstall}}
 
 \bigskip
 The directions are similar between Windows/IIS and Unix/Apache.

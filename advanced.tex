@@ -1,36 +1,5 @@
-% setup
-\documentclass[hyperref={colorlinks=true},professionalfonts]{beamer}
-% \usepackage[latin1]{inputenc}
-\usepackage{listings}
-\usepackage{hyperref}
 
-% any shorthands
-\newcommand{\us}[1]{ \_#1\_ } % we do so many underscored identifiers
-\newcommand{\email}[1]{\href{mailto:#1}{#1}}
-
-% presentation configuration
-\usetheme{Warsaw}
-\usecolortheme{crane}
-
-\title[Advanced Shibboleth Bootcamp]{Advanced Shibboleth topics}
-\institute{University of Florida}
-\author{UF IT/CNS/Open Systems Group}
-
-\date{\today}
-
-% document
-\begin{document}
-
-\begin{frame}
-\titlepage
-
-\center{
-Eli Ben-Shoshan (\email{ebs@ufl.edu}) \\ 
-Martin Smith (\email{smithmb@ufl.edu}) \\
-Laura Guazzelli (\email{laura2@ufl.edu}) \\
-}
-\end{frame}
-
+\input{include.tex}
 
 \begin{frame}
 \frametitle{Goals}
@@ -43,7 +12,7 @@ Discussion format; may include:
 \item Application-managed sessions
 \item Alternate SAML profiles and bindings
 \item Hard-to-shibbolize applications
-\item ARP Affiliations and ARP Groups changes and their impact on applications
+\item ARP Affiliations\& ARP Groups changes, impact
 \end{itemize}
 \end{frame}
 
@@ -53,7 +22,7 @@ Discussion format; may include:
 \item Keep current with latest releases 
 \item Rotate log files for native.log, shibd.log, transaction.log 
 \item Add new sites, remove old sites 
-\item Don’t need to update certs/keys for SAML
+\item Don't need to update certs/keys for SAML
 \end{itemize}
 \end{frame}
 
@@ -62,7 +31,8 @@ Discussion format; may include:
 \begin{itemize}
 \item Process check for shibd, ensure webserver config is sound 
 \item HTTP HEAD/GET on /Shibboleth.sso/Status 
-\item Synthetic tests for as much as possible High-availability strategies
+\item Synthetic tests for as much as possible 
+\item High-availability strategies
 \item Protecting other handler URLs under /Shibboleth.sso/ 
 \item Dealing with SE Linux, Logwatch 
 \item Don’t use Shibboleth as your only authn...
